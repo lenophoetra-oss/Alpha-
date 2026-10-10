@@ -1,0 +1,630 @@
+{
+  "entities": {
+    "Wallet": {
+      "title": "Wallet",
+      "description": "Kantong saldo kas konter (Tunai, Bank, Server Pulsa, E-Wallet)",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "UID pemilik konter",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Nama kantong kas",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "type": {
+          "type": "string",
+          "description": "Tipe kantong kas",
+          "enum": ["tunai", "bank", "server", "ewallet"]
+        },
+        "initialBalance": {
+          "type": "number",
+          "description": "Saldo awal atau penyesuaian dasar kantong"
+        },
+        "accountInfo": {
+          "type": "string",
+          "description": "Keterangan nomor rekening atau ID server",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["ownerId", "name", "type", "initialBalance", "accountInfo", "createdAt", "updatedAt"]
+    },
+    "PhoneInventory": {
+      "title": "PhoneInventory",
+      "description": "Data stok dan jual beli HP baru, seken, dan minusan (80% transaksi utama)",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "brand": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "imei": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "condition": {
+          "type": "string",
+          "enum": ["baru", "seken", "minusan"]
+        },
+        "completeness": {
+          "type": "string",
+          "enum": ["fullset", "unit_cas", "batangan"]
+        },
+        "minusNotes": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "buyPrice": {
+          "type": "number"
+        },
+        "serviceCost": {
+          "type": "number"
+        },
+        "targetSellPrice": {
+          "type": "number"
+        },
+        "soldPrice": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["tersedia", "servis", "terjual"]
+        },
+        "sourceInfo": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "buyerInfo": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "walletId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "brand",
+        "model",
+        "imei",
+        "condition",
+        "completeness",
+        "minusNotes",
+        "buyPrice",
+        "serviceCost",
+        "targetSellPrice",
+        "soldPrice",
+        "status",
+        "sourceInfo",
+        "buyerInfo",
+        "walletId",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CatalogPreset": {
+      "title": "CatalogPreset",
+      "description": "Master settingan harga per voucher, pulsa, data, aksesoris, atau jasa",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "category": {
+          "type": "string",
+          "enum": ["voucher", "pulsa_data", "aksesoris", "topup_transfer", "servis"]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "costPrice": {
+          "type": "number"
+        },
+        "sellPrice": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["ownerId", "category", "name", "costPrice", "sellPrice", "createdAt", "updatedAt"]
+    },
+    "PawnRecord": {
+      "title": "PawnRecord",
+      "description": "Data pergadaian barang (HP, Motor, Laptop, Elektronik, Lainnya) dengan skema biaya fleksibel",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "customerName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "customerPhone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "itemCategory": {
+          "type": "string",
+          "enum": ["hp", "motor", "laptop", "elektronik", "lainnya"]
+        },
+        "itemName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "itemCondition": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "loanAmount": {
+          "type": "number"
+        },
+        "feeAmount": {
+          "type": "number"
+        },
+        "feeScheme": {
+          "type": "string",
+          "enum": ["potong_awal", "bayar_akhir", "fleksibel"]
+        },
+        "totalFeeCollected": {
+          "type": "number"
+        },
+        "dueDate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30
+        },
+        "status": {
+          "type": "string",
+          "enum": ["aktif", "diperpanjang", "ditebus", "hangus_lelang"]
+        },
+        "walletId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "customerName",
+        "customerPhone",
+        "itemCategory",
+        "itemName",
+        "itemCondition",
+        "loanAmount",
+        "feeAmount",
+        "feeScheme",
+        "totalFeeCollected",
+        "dueDate",
+        "status",
+        "walletId",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "InvestmentRecord": {
+      "title": "InvestmentRecord",
+      "description": "Data tanam modal atau investasi ke orang lain beserta bagi hasil",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "partnerName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "businessName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "capitalAmount": {
+          "type": "number"
+        },
+        "returnedCapital": {
+          "type": "number"
+        },
+        "totalProfitShared": {
+          "type": "number"
+        },
+        "profitShareNote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 250
+        },
+        "status": {
+          "type": "string",
+          "enum": ["aktif", "selesai"]
+        },
+        "walletId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "partnerName",
+        "businessName",
+        "capitalAmount",
+        "returnedCapital",
+        "totalProfitShared",
+        "profitShareNote",
+        "status",
+        "walletId",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "DebtRecord": {
+      "title": "DebtRecord",
+      "description": "Data hutang konter dan piutang pelanggan",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "type": {
+          "type": "string",
+          "enum": ["piutang", "hutang"]
+        },
+        "personName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 250
+        },
+        "totalAmount": {
+          "type": "number"
+        },
+        "paidAmount": {
+          "type": "number"
+        },
+        "dueDate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30
+        },
+        "status": {
+          "type": "string",
+          "enum": ["belum_lunas", "lunas"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "type",
+        "personName",
+        "phone",
+        "description",
+        "totalAmount",
+        "paidAmount",
+        "dueDate",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "LedgerTransaction": {
+      "title": "LedgerTransaction",
+      "description": "Riwayat transaksi keuangan, penjualan, kulakan, topup, pengeluaran, dan gaji pribadi",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "jual_hp",
+            "beli_hp",
+            "voucher",
+            "pulsa_data",
+            "aksesoris",
+            "topup_transfer",
+            "servis",
+            "kulakan_barang",
+            "gadai_keluar",
+            "gadai_masuk",
+            "investasi_keluar",
+            "investasi_masuk",
+            "hutang_piutang",
+            "pengeluaran_toko",
+            "gaji_pribadi",
+            "pengeluaran_pribadi",
+            "pemasukan_pribadi",
+            "mutasi_saldo"
+          ]
+        },
+        "flowType": {
+          "type": "string",
+          "enum": ["masuk", "keluar", "mutasi"]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "customerName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "walletId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "secondaryWalletId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "secondaryAmount": {
+          "type": "number"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "costAmount": {
+          "type": "number"
+        },
+        "profitAmount": {
+          "type": "number"
+        },
+        "referenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "dateString": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "category",
+        "flowType",
+        "title",
+        "customerName",
+        "walletId",
+        "secondaryWalletId",
+        "secondaryAmount",
+        "amount",
+        "costAmount",
+        "profitAmount",
+        "referenceId",
+        "dateString",
+        "notes",
+        "createdAt"
+      ]
+    },
+    "License": {
+        "title": "License",
+        "description": "Lisensi aplikasi customer",
+        "type": "object",
+        "properties": {
+          "ownerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "customerPhone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "licenseKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "type": {
+            "type": "string",
+            "enum": ["trial", "pro"]
+          },
+          "expiryDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "expired"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["ownerId", "customerPhone", "licenseKey", "type", "expiryDate", "status", "createdAt", "updatedAt"]
+      },
+      "CustomerRecord": {
+      "title": "CustomerRecord",
+      "description": "Data buku pelanggan, nasabah gadai, dan supplier konter",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "category": {
+          "type": "string",
+          "enum": ["umum", "gadai", "langganan", "supplier"]
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["ownerId", "name", "phone", "category", "notes", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/wallets/{walletId}": {
+      "schema": { "$ref": "#/entities/Wallet" },
+      "description": "Kantong saldo milik user"
+    },
+    "/phones/{phoneId}": {
+      "schema": { "$ref": "#/entities/PhoneInventory" },
+      "description": "Stok dan riwayat unit HP milik user"
+    },
+    "/catalog_presets/{presetId}": {
+      "schema": { "$ref": "#/entities/CatalogPreset" },
+      "description": "Master preset harga voucher, pulsa, dan aksesoris milik user"
+    },
+    "/pawns/{pawnId}": {
+      "schema": { "$ref": "#/entities/PawnRecord" },
+      "description": "Data gadai barang milik user"
+    },
+    "/investments/{investmentId}": {
+      "schema": { "$ref": "#/entities/InvestmentRecord" },
+      "description": "Data investasi/tanam modal milik user"
+    },
+    "/debts/{debtId}": {
+      "schema": { "$ref": "#/entities/DebtRecord" },
+      "description": "Data hutang dan piutang milik user"
+    },
+    "/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/LedgerTransaction" },
+      "description": "Riwayat seluruh transaksi kasir milik user"
+    },
+    "/customers/{customerId}": {
+      "schema": { "$ref": "#/entities/CustomerRecord" },
+      "description": "Data pelanggan konter milik user"
+    },
+    "/licenses/{licenseId}": {
+      "schema": { "$ref": "#/entities/License" },
+      "description": "Data lisensi pelanggan"
+    }
+  }
+}

@@ -1,0 +1,338 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified != false;
+    }
+
+    function isValidOwnedWallet(walletId) {
+      return walletId == '-' || (
+        isValidId(walletId)
+        && exists(/databases/$(database)/documents/wallets/$(walletId))
+        && get(/databases/$(database)/documents/wallets/$(walletId)).data.ownerId == request.auth.uid
+      );
+    }
+
+    function isValidWallet(data) {
+      return data.keys().hasAll(['ownerId', 'name', 'type', 'initialBalance', 'accountInfo', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['ownerId', 'name', 'type', 'initialBalance', 'accountInfo', 'createdAt', 'updatedAt'])
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.ownerId == request.auth.uid
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 80
+        && data.type is string && data.type in ['tunai', 'bank', 'server', 'ewallet']
+        && data.initialBalance is number && data.initialBalance >= -100000000000 && data.initialBalance <= 100000000000
+        && data.accountInfo is string && data.accountInfo.size() >= 1 && data.accountInfo.size() <= 120
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidPhone(data) {
+      return data.keys().hasAll([
+          'ownerId', 'brand', 'model', 'imei', 'condition', 'completeness',
+          'minusNotes', 'buyPrice', 'serviceCost', 'targetSellPrice', 'soldPrice',
+          'status', 'sourceInfo', 'buyerInfo', 'walletId', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId', 'brand', 'model', 'imei', 'condition', 'completeness',
+          'minusNotes', 'buyPrice', 'serviceCost', 'targetSellPrice', 'soldPrice',
+          'status', 'sourceInfo', 'buyerInfo', 'walletId', 'createdAt', 'updatedAt'
+        ])
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.ownerId == request.auth.uid
+        && data.brand is string && data.brand.size() >= 1 && data.brand.size() <= 60
+        && data.model is string && data.model.size() >= 1 && data.model.size() <= 120
+        && data.imei is string && data.imei.size() >= 1 && data.imei.size() <= 60
+        && data.condition is string && data.condition in ['baru', 'seken', 'minusan']
+        && data.completeness is string && data.completeness in ['fullset', 'unit_cas', 'batangan']
+        && data.minusNotes is string && data.minusNotes.size() >= 1 && data.minusNotes.size() <= 300
+        && data.buyPrice is number && data.buyPrice >= 0 && data.buyPrice <= 10000000000
+        && data.serviceCost is number && data.serviceCost >= 0 && data.serviceCost <= 10000000000
+        && data.targetSellPrice is number && data.targetSellPrice >= 0 && data.targetSellPrice <= 10000000000
+        && data.soldPrice is number && data.soldPrice >= 0 && data.soldPrice <= 10000000000
+        && data.status is string && data.status in ['tersedia', 'servis', 'terjual']
+        && data.sourceInfo is string && data.sourceInfo.size() >= 1 && data.sourceInfo.size() <= 120
+        && data.buyerInfo is string && data.buyerInfo.size() >= 1 && data.buyerInfo.size() <= 120
+        && data.walletId is string && data.walletId.size() >= 1 && data.walletId.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidCatalogPreset(data) {
+      return data.keys().hasAll(['ownerId', 'category', 'name', 'costPrice', 'sellPrice', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['ownerId', 'category', 'name', 'costPrice', 'sellPrice', 'createdAt', 'updatedAt'])
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.ownerId == request.auth.uid
+        && data.category is string && data.category in ['voucher', 'pulsa_data', 'aksesoris', 'topup_transfer', 'servis']
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 120
+        && data.costPrice is number && data.costPrice >= 0 && data.costPrice <= 1000000000
+        && data.sellPrice is number && data.sellPrice >= 0 && data.sellPrice <= 1000000000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidPawn(data) {
+      return data.keys().hasAll([
+          'ownerId', 'customerName', 'customerPhone', 'itemCategory', 'itemName',
+          'itemCondition', 'loanAmount', 'feeAmount', 'feeScheme', 'totalFeeCollected',
+          'dueDate', 'status', 'walletId', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId', 'customerName', 'customerPhone', 'itemCategory', 'itemName',
+          'itemCondition', 'loanAmount', 'feeAmount', 'feeScheme', 'totalFeeCollected',
+          'dueDate', 'status', 'walletId', 'createdAt', 'updatedAt'
+        ])
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.ownerId == request.auth.uid
+        && data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 100
+        && data.customerPhone is string && data.customerPhone.size() >= 1 && data.customerPhone.size() <= 60
+        && data.itemCategory is string && data.itemCategory in ['hp', 'motor', 'laptop', 'elektronik', 'lainnya']
+        && data.itemName is string && data.itemName.size() >= 1 && data.itemName.size() <= 120
+        && data.itemCondition is string && data.itemCondition.size() >= 1 && data.itemCondition.size() <= 300
+        && data.loanAmount is number && data.loanAmount >= 0 && data.loanAmount <= 10000000000
+        && data.feeAmount is number && data.feeAmount >= 0 && data.feeAmount <= 10000000000
+        && data.feeScheme is string && data.feeScheme in ['potong_awal', 'bayar_akhir', 'fleksibel']
+        && data.totalFeeCollected is number && data.totalFeeCollected >= 0 && data.totalFeeCollected <= 10000000000
+        && data.dueDate is string && data.dueDate.size() >= 1 && data.dueDate.size() <= 30
+        && data.status is string && data.status in ['aktif', 'diperpanjang', 'ditebus', 'hangus_lelang']
+        && data.walletId is string && data.walletId.size() >= 1 && data.walletId.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidInvestment(data) {
+      return data.keys().hasAll([
+          'ownerId', 'partnerName', 'businessName', 'capitalAmount', 'returnedCapital',
+          'totalProfitShared', 'profitShareNote', 'status', 'walletId', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId', 'partnerName', 'businessName', 'capitalAmount', 'returnedCapital',
+          'totalProfitShared', 'profitShareNote', 'status', 'walletId', 'createdAt', 'updatedAt'
+        ])
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.ownerId == request.auth.uid
+        && data.partnerName is string && data.partnerName.size() >= 1 && data.partnerName.size() <= 100
+        && data.businessName is string && data.businessName.size() >= 1 && data.businessName.size() <= 150
+        && data.capitalAmount is number && data.capitalAmount >= 0 && data.capitalAmount <= 100000000000
+        && data.returnedCapital is number && data.returnedCapital >= 0 && data.returnedCapital <= 100000000000
+        && data.totalProfitShared is number && data.totalProfitShared >= 0 && data.totalProfitShared <= 100000000000
+        && data.profitShareNote is string && data.profitShareNote.size() >= 1 && data.profitShareNote.size() <= 250
+        && data.status is string && data.status in ['aktif', 'selesai']
+        && data.walletId is string && data.walletId.size() >= 1 && data.walletId.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidDebt(data) {
+      return data.keys().hasAll([
+          'ownerId', 'type', 'personName', 'phone', 'description',
+          'totalAmount', 'paidAmount', 'dueDate', 'status', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId', 'type', 'personName', 'phone', 'description',
+          'totalAmount', 'paidAmount', 'dueDate', 'status', 'createdAt', 'updatedAt'
+        ])
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.ownerId == request.auth.uid
+        && data.type is string && data.type in ['piutang', 'hutang']
+        && data.personName is string && data.personName.size() >= 1 && data.personName.size() <= 100
+        && data.phone is string && data.phone.size() >= 1 && data.phone.size() <= 60
+        && data.description is string && data.description.size() >= 1 && data.description.size() <= 250
+        && data.totalAmount is number && data.totalAmount >= 0 && data.totalAmount <= 100000000000
+        && data.paidAmount is number && data.paidAmount >= 0 && data.paidAmount <= 100000000000
+        && data.dueDate is string && data.dueDate.size() >= 1 && data.dueDate.size() <= 30
+        && data.status is string && data.status in ['belum_lunas', 'lunas']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidTransaction(data) {
+      return data.keys().hasAll([
+          'ownerId', 'category', 'flowType', 'title', 'customerName',
+          'walletId', 'secondaryWalletId', 'secondaryAmount', 'amount',
+          'costAmount', 'profitAmount', 'referenceId', 'dateString', 'notes', 'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId', 'category', 'flowType', 'title', 'customerName',
+          'walletId', 'secondaryWalletId', 'secondaryAmount', 'amount',
+          'costAmount', 'profitAmount', 'referenceId', 'dateString', 'notes', 'createdAt'
+        ])
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.ownerId == request.auth.uid
+        && data.category is string && data.category in [
+          'jual_hp', 'beli_hp', 'voucher', 'pulsa_data', 'aksesoris',
+          'topup_transfer', 'servis', 'kulakan_barang', 'gadai_keluar',
+          'gadai_masuk', 'investasi_keluar', 'investasi_masuk',
+          'hutang_piutang', 'pengeluaran_toko', 'gaji_pribadi',
+          'pengeluaran_pribadi', 'pemasukan_pribadi', 'mutasi_saldo'
+        ]
+        && data.flowType is string && data.flowType in ['masuk', 'keluar', 'mutasi']
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 150
+        && data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 100
+        && data.walletId is string && data.walletId.size() >= 1 && data.walletId.size() <= 128
+        && data.secondaryWalletId is string && data.secondaryWalletId.size() >= 1 && data.secondaryWalletId.size() <= 128
+        && data.secondaryAmount is number && data.secondaryAmount >= 0 && data.secondaryAmount <= 100000000000
+        && data.amount is number && data.amount >= 0 && data.amount <= 100000000000
+        && data.costAmount is number && data.costAmount >= 0 && data.costAmount <= 100000000000
+        && data.profitAmount is number && data.profitAmount >= -100000000000 && data.profitAmount <= 100000000000
+        && data.referenceId is string && data.referenceId.size() >= 1 && data.referenceId.size() <= 128
+        && data.dateString is string && data.dateString.size() >= 1 && data.dateString.size() <= 20
+        && data.notes is string && data.notes.size() >= 1 && data.notes.size() <= 300
+        && data.createdAt is timestamp;
+    }
+
+    function isValidCustomer(data) {
+      return data.keys().hasAll([
+          'ownerId', 'name', 'phone', 'category', 'notes', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId', 'name', 'phone', 'category', 'notes', 'createdAt', 'updatedAt'
+        ])
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.ownerId == request.auth.uid
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 100
+        && data.phone is string && data.phone.size() >= 1 && data.phone.size() <= 60
+        && data.category is string && data.category in ['umum', 'gadai', 'langganan', 'supplier']
+        && data.notes is string && data.notes.size() >= 1 && data.notes.size() <= 300
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidLicense(data) {
+      return data.keys().hasAll(['ownerId', 'customerPhone', 'licenseKey', 'type', 'expiryDate', 'status', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['ownerId', 'customerPhone', 'licenseKey', 'type', 'expiryDate', 'status', 'createdAt', 'updatedAt'])
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.ownerId == request.auth.uid
+        && data.customerPhone is string && data.customerPhone.size() >= 1 && data.customerPhone.size() <= 60
+        && data.licenseKey is string && data.licenseKey.size() >= 1 && data.licenseKey.size() <= 60
+        && data.type is string && data.type in ['trial', 'pro']
+        && data.expiryDate is timestamp
+        && data.status is string && data.status in ['active', 'expired']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    match /wallets/{walletId} {
+      allow get: if isSignedIn() && isValidId(walletId) && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(walletId) && isValidWallet(incoming());
+      allow update: if isVerifiedUser() && isValidId(walletId) && isValidWallet(incoming())
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isVerifiedUser() && isValidId(walletId) && existing().ownerId == request.auth.uid;
+    }
+
+    match /phones/{phoneId} {
+      allow get: if isSignedIn() && isValidId(phoneId) && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(phoneId) && isValidPhone(incoming())
+        && isValidOwnedWallet(incoming().walletId);
+      allow update: if isVerifiedUser() && isValidId(phoneId) && isValidPhone(incoming())
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isVerifiedUser() && isValidId(phoneId) && existing().ownerId == request.auth.uid;
+    }
+
+    match /catalog_presets/{presetId} {
+      allow get: if isSignedIn() && isValidId(presetId) && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(presetId) && isValidCatalogPreset(incoming());
+      allow update: if isVerifiedUser() && isValidId(presetId) && isValidCatalogPreset(incoming())
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isVerifiedUser() && isValidId(presetId) && existing().ownerId == request.auth.uid;
+    }
+
+    match /pawns/{pawnId} {
+      allow get: if isSignedIn() && isValidId(pawnId) && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(pawnId) && isValidPawn(incoming())
+        && isValidOwnedWallet(incoming().walletId);
+      allow update: if isVerifiedUser() && isValidId(pawnId) && isValidPawn(incoming())
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isVerifiedUser() && isValidId(pawnId) && existing().ownerId == request.auth.uid;
+    }
+
+    match /investments/{investmentId} {
+      allow get: if isSignedIn() && isValidId(investmentId) && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(investmentId) && isValidInvestment(incoming())
+        && isValidOwnedWallet(incoming().walletId);
+      allow update: if isVerifiedUser() && isValidId(investmentId) && isValidInvestment(incoming())
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isVerifiedUser() && isValidId(investmentId) && existing().ownerId == request.auth.uid;
+    }
+
+    match /debts/{debtId} {
+      allow get: if isSignedIn() && isValidId(debtId) && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(debtId) && isValidDebt(incoming());
+      allow update: if isVerifiedUser() && isValidId(debtId) && isValidDebt(incoming())
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isVerifiedUser() && isValidId(debtId) && existing().ownerId == request.auth.uid;
+    }
+
+    match /transactions/{transactionId} {
+      allow get: if isSignedIn() && isValidId(transactionId) && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(transactionId) && isValidTransaction(incoming())
+        && isValidOwnedWallet(incoming().walletId);
+      allow update: if isVerifiedUser() && isValidId(transactionId) && isValidTransaction(incoming())
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isVerifiedUser() && isValidId(transactionId) && existing().ownerId == request.auth.uid;
+    }
+
+    match /customers/{customerId} {
+      allow get: if isSignedIn() && isValidId(customerId) && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(customerId) && isValidCustomer(incoming());
+      allow update: if isVerifiedUser() && isValidId(customerId) && isValidCustomer(incoming())
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isVerifiedUser() && isValidId(customerId) && existing().ownerId == request.auth.uid;
+    }
+
+    match /licenses/{licenseId} {
+      allow get: if isSignedIn() && isValidId(licenseId) && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(licenseId) && isValidLicense(incoming());
+      allow update: if isVerifiedUser() && isValidId(licenseId) && isValidLicense(incoming())
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isVerifiedUser() && isValidId(licenseId) && existing().ownerId == request.auth.uid;
+    }
+  }
+}

@@ -1,0 +1,190 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .font-mono-tabular {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Unified Dark Wallet Card Style (Identical in Light & Dark Mode) */
+.wallet-card-dark {
+  background-color: #152036 !important;
+  border-color: #293855 !important;
+  color: #f8fafc !important;
+}
+
+.wallet-card-dark:hover {
+  background-color: #1b2945 !important;
+}
+
+.wallet-card-dark .wallet-icon-box {
+  background-color: #0b111e !important;
+  border-color: #293855 !important;
+}
+
+.wallet-card-dark .wallet-label-text {
+  color: #cbd5e1 !important;
+}
+
+.wallet-card-dark .wallet-balance-text {
+  color: #ffffff !important;
+}
+
+.wallet-card-dark .wallet-action-btn {
+  color: #94a3b8 !important;
+}
+
+.wallet-card-dark .wallet-action-btn:hover {
+  color: #ffffff !important;
+}
+
+/* Dark Mode Global Theme Support */
+html.dark body {
+  background-color: #090d16;
+  color: #f1f5f9;
+}
+
+html.dark .bg-slate-50 {
+  background-color: #090d16 !important;
+}
+
+html.dark .bg-slate-50\/90,
+html.dark .bg-slate-50\/80,
+html.dark .bg-slate-50\/70,
+html.dark .bg-slate-50\/60 {
+  background-color: #152036 !important;
+  color: #f1f5f9;
+}
+
+html.dark .bg-white,
+html.dark .bg-white\/95,
+html.dark .bg-white\/90 {
+  background-color: #111827 !important;
+  color: #f1f5f9;
+}
+
+html.dark .bg-slate-100,
+html.dark .bg-slate-200\/70,
+html.dark .bg-slate-200 {
+  background-color: #1e293b !important;
+  color: #e2e8f0;
+}
+
+html.dark .bg-emerald-50,
+html.dark .bg-emerald-50\/80,
+html.dark .bg-emerald-50\/70,
+html.dark .bg-emerald-50\/40 {
+  background-color: rgba(6, 78, 59, 0.35) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+html.dark .bg-blue-50,
+html.dark .bg-blue-50\/70 {
+  background-color: rgba(30, 58, 138, 0.35) !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+}
+
+html.dark .bg-violet-50,
+html.dark .bg-violet-50\/70 {
+  background-color: rgba(76, 29, 149, 0.35) !important;
+  border-color: rgba(139, 92, 246, 0.35) !important;
+}
+
+html.dark .bg-amber-50,
+html.dark .bg-amber-50\/70 {
+  background-color: rgba(120, 53, 15, 0.35) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+html.dark .border-slate-200,
+html.dark .border-slate-200\/80,
+html.dark .border-slate-300,
+html.dark .border-slate-100 {
+  border-color: #1f2937 !important;
+}
+
+html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #1f2937 !important;
+}
+
+html.dark .text-slate-900,
+html.dark .text-slate-800 {
+  color: #f8fafc !important;
+}
+
+html.dark .text-slate-700,
+html.dark .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-500,
+html.dark .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-emerald-700,
+html.dark .text-emerald-800 {
+  color: #34d399 !important;
+}
+
+html.dark .text-blue-700 {
+  color: #60a5fa !important;
+}
+
+html.dark .text-violet-700 {
+  color: #a78bfa !important;
+}
+
+html.dark .text-amber-700,
+html.dark .text-amber-800 {
+  color: #fbbf24 !important;
+}
+
+html.dark button.bg-slate-900 {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+html.dark button.bg-slate-900:hover {
+  background-color: #1d4ed8 !important;
+}
+
+html.dark input:not([type="checkbox"]):not([type="radio"]),
+html.dark select,
+html.dark textarea {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+/* Thermal Receipt Print Styling */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-receipt-area,
+  #printable-receipt-area * {
+    visibility: visible;
+  }
+  #printable-receipt-area {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

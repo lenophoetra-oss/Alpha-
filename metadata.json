@@ -1,0 +1,8 @@
+{
+  "name": "Remix Kasir Konter \u0026 Gadai Pro",
+  "description": "Sistem kasir konter HP, jual beli HP baru/bekas/minusan, pergadaian barang, pulsa/topup, pembukuan keuangan, hutang piutang, dan investasi modal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
